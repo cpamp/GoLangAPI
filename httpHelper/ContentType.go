@@ -1,4 +1,4 @@
-package httpResponder
+package httpHelper
 
 // ContentType response content type
 type ContentType int
@@ -11,7 +11,7 @@ const (
 )
 
 var contentTypes = []string{
-	"Json",
+	"JSON",
 	"Text",
 }
 

@@ -1,11 +1,11 @@
 package Routes
 
 import (
-	"helloworld/httpResponder"
+	"helloworld/httpHelper"
 	"net/http"
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
-	respond := httpResponder.NewResponder(w, r, httpResponder.ContentTypeJSON)
+	respond := httpHelper.NewResponder(w, r, httpHelper.ContentTypeJSON)
 	respond.Unauthorized("You are not authorized")
 }

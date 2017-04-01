@@ -17,7 +17,7 @@ type Routes []Route
 
 func NewRouter() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
-	for _, route := range routes {
+	for _, route := range AppRoutes {
 		router.
 			Methods(route.Method).
 			Path(route.Pattern).
@@ -28,7 +28,7 @@ func NewRouter() *mux.Router {
 	return router
 }
 
-var routes = Routes{
+var AppRoutes = Routes{
 	Route{
 		"Index",
 		"GET",
@@ -40,5 +40,23 @@ var routes = Routes{
 		"GET",
 		"/hello",
 		HelloIndex,
+	},
+	Route{
+		"HelloAny",
+		"GET",
+		"/helloany",
+		HelloAny,
+	},
+	Route{
+		"HelloText",
+		"GET",
+		"/hellotext",
+		HelloText,
+	},
+	Route{
+		"H8",
+		"GET",
+		"/h8",
+		H8,
 	},
 }
