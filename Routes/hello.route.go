@@ -39,3 +39,15 @@ func H8(w http.ResponseWriter, r *http.Request) {
 	responder := httpHelper.NewResponderText(w, r)
 	responder.Ok(rune(234))
 }
+
+type AString struct{}
+
+func (a *AString) String() string {
+	return "Ok"
+}
+
+func HelloString(w http.ResponseWriter, r *http.Request) {
+	responder := httpHelper.NewResponderText(w, r)
+	astring := AString{}
+	responder.Ok(&astring)
+}

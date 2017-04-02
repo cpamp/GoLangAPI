@@ -59,4 +59,10 @@ var AppRoutes = Routes{
 		"/h8",
 		H8,
 	},
+	Route{
+		"HelloString",
+		"GET",
+		"/hstr",
+		HelloString,
+	},
 }

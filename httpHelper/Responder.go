@@ -29,56 +29,59 @@ func NewResponderText(writer http.ResponseWriter, request *http.Request) Respond
 	return Responder{writer, request, ContentTypeText}
 }
 
-func (r Responder) getError(err ErrorResponse) string {
+func (r Responder) getError(err ErrorResponse) []byte {
 	return r.getResponseText(err)
 }
 
-func (r Responder) getResponseText(resp interface{}) string {
-	result := ""
+func (r Responder) getResponseText(resp interface{}) []byte {
+	result := []byte{}
 	if resp == nil {
-		resp = ""
+		return []byte("")
+	} else if IsErrorResponse(resp) {
+		resp.(*ErrorResponse).SetMessage(http.StatusText(resp.(*ErrorResponse).StatusCode))
 	}
+
 	if r.ContentType.Is(ContentTypeJSON) {
 		j, _ := json.Marshal(resp)
-		result = string(j)
+		result = j
 	} else if r.ContentType.Is(ContentTypeText) {
 		switch t := resp.(type) {
-		case ErrorResponse:
-			result = resp.(ErrorResponse).Message
+		case *ErrorResponse:
+			result = []byte(resp.(*ErrorResponse).Message)
 		case string:
-			result = resp.(string)
+			result = []byte(resp.(string))
 		case bool:
-			result = strconv.FormatBool(resp.(bool))
+			result = []byte(strconv.FormatBool(resp.(bool)))
 		case float32:
-			result = strconv.FormatFloat(resp.(float64), 'f', -1, 32)
+			result = []byte(strconv.FormatFloat(resp.(float64), 'f', -1, 32))
 		case float64:
-			result = strconv.FormatFloat(resp.(float64), 'f', -1, 64)
+			result = []byte(strconv.FormatFloat(resp.(float64), 'f', -1, 64))
 		case int:
-			result = strconv.FormatInt(int64(resp.(int)), 10)
+			result = []byte(strconv.FormatInt(int64(resp.(int)), 10))
 		case int8:
-			result = strconv.FormatInt(int64(resp.(int8)), 10)
+			result = []byte(strconv.FormatInt(int64(resp.(int8)), 10))
 		case int16:
-			result = strconv.FormatInt(int64(resp.(int16)), 10)
+			result = []byte(strconv.FormatInt(int64(resp.(int16)), 10))
 		case int32:
-			result = strconv.FormatInt(int64(resp.(int32)), 10)
+			result = []byte(strconv.FormatInt(int64(resp.(int32)), 10))
 		case int64:
-			result = strconv.FormatInt(resp.(int64), 10)
+			result = []byte(strconv.FormatInt(resp.(int64), 10))
 		case uint:
-			result = strconv.FormatUint(uint64(resp.(uint)), 10)
+			result = []byte(strconv.FormatUint(uint64(resp.(uint)), 10))
 		case uint8:
-			result = strconv.FormatUint(uint64(resp.(uint8)), 10)
+			result = []byte(strconv.FormatUint(uint64(resp.(uint8)), 10))
 		case uint16:
-			result = strconv.FormatUint(uint64(resp.(uint16)), 10)
+			result = []byte(strconv.FormatUint(uint64(resp.(uint16)), 10))
 		case uint32:
-			result = strconv.FormatUint(uint64(resp.(uint32)), 10)
+			result = []byte(strconv.FormatUint(uint64(resp.(uint32)), 10))
 		case uint64:
-			result = strconv.FormatUint(resp.(uint64), 10)
+			result = []byte(strconv.FormatUint(resp.(uint64), 10))
 		case []byte:
-			result = string(resp.([]byte))
+			result = resp.([]byte)
 		case StringResponse:
-			result = resp.(StringResponse).String()
+			result = []byte(resp.(StringResponse).String())
 		default:
-			result = "Unsupported text type " + reflect.TypeOf(t).String() + "; Use JSON response"
+			result = []byte("Unsupported text type " + reflect.TypeOf(t).String() + "; Use JSON response")
 			break
 		}
 	}
@@ -87,7 +90,7 @@ func (r Responder) getResponseText(resp interface{}) string {
 
 func (r Responder) write(a interface{}, code int) {
 	r.HTTPWriter.WriteHeader(code)
-	r.HTTPWriter.Write([]byte(r.getResponseText(a)))
+	r.HTTPWriter.Write(r.getResponseText(a))
 }
 
 // Ok Return ok
@@ -157,8 +160,8 @@ func (r Responder) TemporaryRedirect(a interface{}) {
 
 // Error Return custom error
 func (r Responder) Error(err string, code int, errorData interface{}) {
-	errResponse := ErrorResponse{code, err, errorData}
-	http.Error(r.HTTPWriter, r.getError(errResponse), code)
+	errResponse := &ErrorResponse{code, err, errorData}
+	r.write(errResponse, code)
 }
 
 // BadRequest Respond to an HTTP request with BadRequest

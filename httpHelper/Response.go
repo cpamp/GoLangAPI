@@ -1,14 +1,8 @@
 package httpHelper
 
 import (
-	"encoding/json"
+	"reflect"
 )
-
-// Response Response text
-type Response interface {
-	ToJSON() string
-	ToText() string
-}
 
 // ErrorResponse An error response
 type ErrorResponse struct {
@@ -17,15 +11,19 @@ type ErrorResponse struct {
 	Data       interface{} `json:"data"`
 }
 
-// ToJSON Convert to json
-func (er ErrorResponse) ToJSON() string {
-	r, _ := json.Marshal(er)
-	return string(r)
+// SetMessage set the message of the error response
+func (er *ErrorResponse) SetMessage(message string) {
+	er.Message = message
 }
 
-// ToText Convert to text
-func (er ErrorResponse) ToText() string {
-	return er.Message
+// ZeroedErrorResponse return zeroed error response
+func ZeroedErrorResponse() *ErrorResponse {
+	return &ErrorResponse{0, "", nil}
+}
+
+// IsErrorResponse check if object is an Error response
+func IsErrorResponse(i interface{}) bool {
+	return reflect.TypeOf(i) == reflect.TypeOf(ZeroedErrorResponse())
 }
 
 // StringResponse string response
