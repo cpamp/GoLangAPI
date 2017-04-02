@@ -7,5 +7,5 @@ import (
 
 func Index(w http.ResponseWriter, r *http.Request) {
 	respond := httpHelper.NewResponder(w, r, httpHelper.ContentTypeJSON)
-	respond.Unauthorized("You are not authorized")
+	respond.Unauthorized("You are not authorized", nil)
 }
