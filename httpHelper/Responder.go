@@ -85,12 +85,9 @@ func (r Responder) getResponseText(resp interface{}) string {
 	return result
 }
 
+// Ok Return ok
 func (r Responder) Ok(a interface{}) {
 	r.HTTPWriter.Write([]byte(r.getResponseText(a)))
-}
-
-func (r Responder) OkString(str string) {
-	r.HTTPWriter.Write([]byte(r.getResponseText("Hi")))
 }
 
 // Error Return custom error
