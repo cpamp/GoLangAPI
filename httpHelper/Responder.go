@@ -37,7 +37,7 @@ func (r Responder) getResponseText(resp interface{}) []byte {
 	result := []byte{}
 	if resp == nil {
 		return []byte("")
-	} else if IsErrorResponse(resp) {
+	} else if IsErrorResponse(resp) && resp.(*ErrorResponse).Message == "" {
 		resp.(*ErrorResponse).SetMessage(http.StatusText(resp.(*ErrorResponse).StatusCode))
 	}
 
