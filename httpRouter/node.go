@@ -6,10 +6,10 @@ import (
 )
 
 type node struct {
-	children     []*node
-	component    string
-	isNamedParam bool
-	methods      map[string]Handle
+	children  []*node
+	component string
+	isParam   bool
+	methods   map[string]Handle
 }
 
 func (n *node) addNode(method, path string, handler Handle) {
@@ -21,10 +21,10 @@ func (n *node) addNode(method, path string, handler Handle) {
 			aNode.methods[method] = handler
 			return
 		}
-		newNode := node{component: component, isNamedParam: false, methods: make(map[string]Handle)}
+		newNode := node{component: component, isParam: false, methods: make(map[string]Handle)}
 
 		if len(component) > 0 && component[0] == ':' {
-			newNode.isNamedParam = true
+			newNode.isParam = true
 		}
 		if i == 1 {
 			newNode.methods[method] = handler
@@ -37,8 +37,8 @@ func (n *node) traverse(components []string, params url.Values) (*node, string) 
 	component := components[0]
 	if len(n.children) > 0 {
 		for _, child := range n.children {
-			if strings.ToLower(component) == strings.ToLower(child.component) || child.isNamedParam {
-				if child.isNamedParam && params != nil {
+			if strings.ToLower(component) == strings.ToLower(child.component) || child.isParam {
+				if child.isParam && params != nil {
 					params.Add(child.component[1:], component)
 				}
 				next := components[1:]

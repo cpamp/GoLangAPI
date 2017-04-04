@@ -1,0 +1,12 @@
+GET http://localhost:8080/unauth
+
+###
+GET http://localhost:8080/test/param/someValue
+
+###
+
+GET http://localhost:8080/test/unsupported
+
+###
+
+GET http://localhost:8080/unauth/hi
