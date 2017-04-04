@@ -30,3 +30,9 @@ func IsErrorResponse(i interface{}) bool {
 type StringResponse interface {
 	String() string
 }
+
+type SafeResponse struct {
+	StatusCode int         `json:"statusCode"`
+	Status     string      `json:"status"`
+	Data       interface{} `json:"data"`
+}
