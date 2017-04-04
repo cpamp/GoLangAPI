@@ -24,20 +24,32 @@ type Router struct {
 }
 
 func NewRouter(rootHandler Handle, contentType httpHelper.ContentType) *Router {
-	node := node{component: "/", isParam: false, methods: make(map[string]Handle)}
+	node := node{component: "/", isParam: false, verbs: make(map[string]Handle)}
 	return &Router{tree: &node, baseHandler: rootHandler, contentType: contentType, safeResponses: false}
 }
 
 func NewRouterSafe(rootHandler Handle, contentType httpHelper.ContentType) *Router {
-	node := node{component: "/", isParam: false, methods: make(map[string]Handle)}
+	node := node{component: "/", isParam: false, verbs: make(map[string]Handle)}
 	return &Router{tree: &node, baseHandler: rootHandler, contentType: contentType, safeResponses: true}
 }
 
-func (r *Router) Handle(method HTTPVerb, path string, handler Handle) {
+func (r *Router) Handle(verb HTTPVerb, path string, handler Handle) {
 	if len(path) > 0 && path[0] != '/' {
 		panic("Path has to start with a /.")
 	}
-	r.tree.addNode(string(method), path, handler)
+	r.tree.addNode(string(verb), path, handler)
+}
+
+func (r *Router) RegisterRoutes(routes Routes) {
+	for i := 0; i < len(routes); i++ {
+		r.Handle(routes[i].Verb, routes[i].Path, routes[i].Handler)
+	}
+}
+
+func (r *Router) RegisterRouteCollection(routeCollection RouteCollection) {
+	for i := 0; i < len(routeCollection); i++ {
+		r.RegisterRoutes(routeCollection[i])
+	}
 }
 
 func (r *Router) Get(path string, handler Handle) {
@@ -68,7 +80,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	if r.safeResponses {
 		responder.SafeResponses()
 	}
-	if handler := node.methods[req.Method]; handler != nil {
+	if handler := node.verbs[req.Method]; handler != nil {
 		handler(HandleHelper{httpHelper.NewResponder(w, req, r.contentType), params})
 	} else if r.baseHandler != nil {
 		r.baseHandler(HandleHelper{httpHelper.NewResponder(w, req, r.contentType), params})

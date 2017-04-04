@@ -9,7 +9,7 @@ type node struct {
 	children  []*node
 	component string
 	isParam   bool
-	methods   map[string]Handle
+	verbs     map[string]Handle
 }
 
 func (n *node) addNode(method, path string, handler Handle) {
@@ -18,16 +18,16 @@ func (n *node) addNode(method, path string, handler Handle) {
 	for i := len(components); i > 0; i-- {
 		aNode, component := n.traverse(components, nil)
 		if aNode.component == component && i == 1 {
-			aNode.methods[method] = handler
+			aNode.verbs[method] = handler
 			return
 		}
-		newNode := node{component: component, isParam: false, methods: make(map[string]Handle)}
+		newNode := node{component: component, isParam: false, verbs: make(map[string]Handle)}
 
 		if len(component) > 0 && component[0] == ':' {
 			newNode.isParam = true
 		}
 		if i == 1 {
-			newNode.methods[method] = handler
+			newNode.verbs[method] = handler
 		}
 		aNode.children = append(aNode.children, &newNode)
 	}
