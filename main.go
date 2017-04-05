@@ -11,6 +11,7 @@ func main() {
 	r := httpRouter.NewRouter(nil, httpHelper.ContentTypeJSON)
 	r.RegisterRouteCollection(AllRoutes)
 	r.Get("/test/get", GoGetter)
+	r.Post("/test/post", PostData)
 
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
@@ -60,6 +61,19 @@ func Unsupported(h httpRouter.HandleHelper) {
 
 func GoGetter(h httpRouter.HandleHelper) {
 	h.Responder.Ok("Go Getta")
+}
+
+type MyParam struct {
+	MyParam string `json:"myParam"`
+}
+
+func PostData(h httpRouter.HandleHelper) {
+	myParam := MyParam{}
+	_, err := h.Responder.ParseBody(&myParam)
+	if err != nil {
+		h.Responder.InternalServerError(err.Error(), nil)
+	}
+	h.Responder.Ok(myParam.MyParam)
 }
 
 var IndexRoutes = httpRouter.Routes{IndexRoute}

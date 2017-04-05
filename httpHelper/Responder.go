@@ -31,6 +31,13 @@ func NewResponderText(writer http.ResponseWriter, request *http.Request) Respond
 	return Responder{writer, request, ContentTypeText, false}
 }
 
+func (r *Responder) ParseBody(obj interface{}) (interface{}, error) {
+	if err := json.NewDecoder(r.HTTPRequest.Body).Decode(obj); err != nil {
+		return nil, err
+	}
+	return obj, nil
+}
+
 func (r *Responder) SetContentType(contentType ContentType) {
 	r.ContentType = contentType
 }

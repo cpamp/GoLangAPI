@@ -81,11 +81,10 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		responder.SafeResponses()
 	}
 	if handler := node.verbs[req.Method]; handler != nil {
-		handler(HandleHelper{httpHelper.NewResponder(w, req, r.contentType), params})
+		handler(HandleHelper{responder, params})
 	} else if r.baseHandler != nil {
-		r.baseHandler(HandleHelper{httpHelper.NewResponder(w, req, r.contentType), params})
+		r.baseHandler(HandleHelper{responder, params})
 	} else {
-		responder := httpHelper.NewResponder(w, req, r.contentType)
 		responder.NotFound("", nil)
 	}
 }
